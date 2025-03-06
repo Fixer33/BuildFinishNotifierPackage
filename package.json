@@ -1,0 +1,14 @@
+{
+  "name": "com.fixer33.build-finish-notifier",
+  "version": "1.0.0",
+  "displayName": "Build Finish Notifier",
+  "description": "Notifies you when your build is finished",
+  "unity": "6000.0",
+  "dependencies": {
+  },
+  "author": {
+    "name": "Fixer33",
+    "email": "fsfixer33@gmail.com",
+    "url": "https://github.com/Fixer33"
+  }
+}
