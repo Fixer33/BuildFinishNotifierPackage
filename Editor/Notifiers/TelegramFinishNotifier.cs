@@ -18,10 +18,12 @@ namespace BuildFinishNotifier.Editor.Notifiers
     
             try
             {
+                string formattedText = GetFormattedText(summaryResult is BuildResult.Succeeded or BuildResult.Unknown
+                    ? Config.CompleteTextTemplate
+                    : Config.FailTextTemplate);
                 Message message = await client.SendTextMessageAsync(
                     chatId: Config.ChatId,
-                    text: summaryResult is BuildResult.Succeeded or BuildResult.Unknown ? 
-                        Config.CompleteTextTemplate : Config.FailTextTemplate,
+                    text: formattedText,
                     parseMode: ParseMode.Html,
                     cancellationToken: CancellationToken.None);
             }

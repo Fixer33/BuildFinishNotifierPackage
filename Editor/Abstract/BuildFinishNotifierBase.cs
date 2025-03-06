@@ -39,5 +39,10 @@ namespace BuildFinishNotifier.Editor.Abstract
         {
             _onConfigUpdate?.Invoke(JsonUtility.ToJson(_config));
         }
+
+        protected string GetFormattedText(string val)
+        {
+            return val.Replace("{project}", Application.productName);
+        }
     }
 }

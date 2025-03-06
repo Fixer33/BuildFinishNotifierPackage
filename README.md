@@ -28,3 +28,8 @@ After installation, navigate to Tools -> Fixer33 -> Build Finish Notifier
 There you will find settings for all your notifiers.
 Enter the data and start your build.
 Upon the build completion you will receive a notification
+
+## Implemented notifiers and documentation
+
+- Telegram notifier - sends messages through Telegram. 
+[Documentation](Documentation/TelegramNotifier.md)
