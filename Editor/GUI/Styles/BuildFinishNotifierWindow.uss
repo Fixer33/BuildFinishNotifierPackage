@@ -1,36 +1,122 @@
+:root {
+  --bg-base:#0F1115; --bg-surface:#171A21; --bg-raised:#1E222B; --bg-overlay:#272C37; --bg-hover:#2E3441;
+  --border-subtle:#262B35; --border-default:#343B49; --border-strong:#475066;
+  --text-primary:#E8ECF3; --text-secondary:#A3ACBD; --text-muted:#6F7889; --text-on-accent:#FFFFFF;
+  --accent:#3B82F6; --accent-hover:#5B9BFF; --accent-pressed:#2B6AD8; --accent-subtle:#1B2A47; --accent-border:#2F5FB3;
+  --success:#34D399; --success-subtle:#10281F;
+  --warning:#FBBF24; --warning-subtle:#2E2410;
+  --danger:#F87171; --danger-subtle:#2E1517;
+  --info:#60A5FA; --info-subtle:#13243B;
+  --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px; --space-5:24px; --space-6:32px;
+  --radius-sm:6px; --radius-md:10px; --radius-lg:14px;
+}
+
 Label {
-    color: white;
-    font-size: 16px;
+    color: var(--text-primary);
+    font-size: 14px;
+}
+
+.notifier-root {
+    background-color: var(--bg-surface);
+}
+
+#container {
+    flex-grow: 1;
+    background-color: var(--bg-surface);
 }
 
 .notifierElement {
-    margin-left: 3px;
-    margin-right: 3px;
-    margin-top: 3px;
-    border-radius: 3px;
-    border-color: white;
+    padding: 20px;
+}
+
+.notifierElement > #container-element__name {
+    font-size: 16px;
+    -unity-font-style: bold;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+#telegram-element__description {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+}
+
+.field {
+    margin-bottom: 16px;
+}
+
+.field-label {
+    font-size: 12px;
+    -unity-font-style: bold;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+}
+
+.field > TextField {
+    margin: 0;
+}
+
+.field > TextField > .unity-base-text-field__input {
+    background-color: var(--bg-base);
+    color: var(--text-primary);
     border-width: 1px;
-    
-    padding: 5px;
-}
-
-.notifierElement > #container-element__name{
-    font-size: 20px;
-    -unity-text-align: middle-center;
-    border-bottom-width: 1px;
-    border-bottom-color: white;
-    margin-bottom: 10px;
-}
-
-.notifierElement > TextField{
-    margin-bottom: 10px;
-    margin-left: 0px;
-    margin-right: 0px;
+    border-color: var(--border-default);
+    border-radius: var(--radius-md);
+    padding: 8px 12px;
+    margin: 0;
     font-size: 14px;
-    padding: 0;
-    height: 30px;
+    min-height: 36px;
 }
 
-.notifierElement > TextField .unity-text-element{
-    color: white;
+.field > TextField > .unity-base-text-field__input:focus {
+    border-color: var(--accent);
 }
+
+.field > TextField .unity-text-element {
+    color: var(--text-primary);
+}
+
+.actions {
+    flex-direction: row;
+    align-items: center;
+}
+
+.btn {
+    margin: 0 8px 0 0;
+    padding: 8px 16px;
+    border-radius: var(--radius-md);
+    border-width: 0;
+    font-size: 14px;
+    -unity-font-style: bold;
+}
+
+.btn--primary {
+    background-color: var(--accent);
+    color: var(--text-on-accent);
+}
+.btn--primary:hover { background-color: var(--accent-hover); }
+.btn--primary:active { background-color: var(--accent-pressed); }
+
+.btn--ghost {
+    background-color: rgba(0,0,0,0);
+    color: var(--text-secondary);
+}
+.btn--ghost:hover { background-color: var(--bg-hover); color: var(--text-primary); }
+
+.btn:disabled {
+    background-color: var(--bg-surface);
+    color: var(--text-muted);
+}
+
+.result {
+    margin-top: 12px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    -unity-font-style: bold;
+    align-self: flex-start;
+    white-space: normal;
+}
+.result--success { background-color: var(--success-subtle); color: var(--success); }
+.result--error { background-color: var(--danger-subtle); color: var(--danger); border-radius: var(--radius-md); }

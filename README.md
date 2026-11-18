@@ -33,3 +33,8 @@ Upon the build completion you will receive a notification
 
 - Telegram notifier - sends messages through Telegram. 
 [Documentation](Documentation/TelegramNotifier.md)
+
+## Documentation
+
+- [Package Description](Documentation/Package%20Description.md)
+- [Open Questions](Documentation/Open%20Questions.md)

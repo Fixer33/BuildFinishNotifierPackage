@@ -32,7 +32,8 @@ namespace BuildFinishNotifier.Editor.GUI
             {
                 rootVisualElement.styleSheets.Add(style);
             }
-            
+            rootVisualElement.AddToClassList("notifier-root");
+
             rootVisualElement.Add(_container = new ScrollView()
             {
                 name = "container",
@@ -52,7 +53,7 @@ namespace BuildFinishNotifier.Editor.GUI
                 element.Add(new Label()
                 {
                     name = "container-element__name",
-                    text = buildNotifier.GetType().Name
+                    text = buildNotifier.GetType().Name.Replace("FinishNotifier", "")
                 });
                 _container.contentContainer.Add(element);
                 buildNotifier.CreateWindowElement(element);

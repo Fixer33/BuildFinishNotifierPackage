@@ -1,9 +1,7 @@
 {
     "name": "com.fixer33.build-finish-notifier.Editor",
     "rootNamespace": "BuildFinishNotifier.Editor",
-    "references": [
-        "GUID:4c8d395a9be680341b0ab11d508811d9"
-    ],
+    "references": [],
     "includePlatforms": [
         "Editor"
     ],
