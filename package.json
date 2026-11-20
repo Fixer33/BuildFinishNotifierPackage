@@ -1,6 +1,6 @@
 {
   "name": "com.fixer33.build-finish-notifier",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "displayName": "Build Finish Notifier",
   "description": "Notifies you when your build is finished",
   "unity": "6000.0",
