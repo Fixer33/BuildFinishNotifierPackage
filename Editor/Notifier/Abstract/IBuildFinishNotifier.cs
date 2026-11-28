@@ -2,7 +2,7 @@ using System;
 using UnityEditor.Build.Reporting;
 using UnityEngine.UIElements;
 
-namespace BuildFinishNotifier.Editor.Abstract
+namespace Fixer33.BuildTools.Editor.Notifier.Abstract
 {
     public interface IBuildFinishNotifier : IDisposable
     {

@@ -1,6 +1,6 @@
 {
-    "name": "com.fixer33.build-finish-notifier.Editor",
-    "rootNamespace": "BuildFinishNotifier.Editor",
+    "name": "com.fixer33.build-tools.Editor",
+    "rootNamespace": "Fixer33.BuildTools.Editor",
     "references": [],
     "includePlatforms": [
         "Editor"

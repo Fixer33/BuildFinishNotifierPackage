@@ -3,7 +3,7 @@ using UnityEditor.Build.Reporting;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace BuildFinishNotifier.Editor.Abstract
+namespace Fixer33.BuildTools.Editor.Notifier.Abstract
 {
     public abstract class BuildFinishNotifierBase : IBuildFinishNotifier
     {

@@ -1,13 +1,14 @@
 using System;
 using System.Linq;
-using BuildFinishNotifier.Editor.Abstract;
-using BuildFinishNotifier.Editor.GUI;
+using Fixer33.BuildTools.Editor.Notifier.Abstract;
+using Fixer33.BuildTools.Editor.Notifier.GUI;
+using Fixer33.BuildTools.Editor.Settings;
 using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
 
-namespace BuildFinishNotifier.Editor
+namespace Fixer33.BuildTools.Editor.Notifier
 {
     internal class BuildFinishNotifier : IPostprocessBuildWithReport
     {
@@ -16,6 +17,8 @@ namespace BuildFinishNotifier.Editor
         [InitializeOnLoadMethod]
         public static void OnLoad()
         {
+            if (!BuildToolsSettings.instance.NotifierEnabled)
+                return;
             if (EditorPrefs.GetInt(FIRST_LAUNCH_KEY, 1) != 1) 
                 return;
             
@@ -54,6 +57,9 @@ namespace BuildFinishNotifier.Editor
 
         public void OnPostprocessBuild(BuildReport report)
         {
+            if (!BuildToolsSettings.instance.NotifierEnabled)
+                return;
+
             var notifiers = CreateAllPossibleNotifiers();
             NotifyAll(notifiers, report.summary.result);
         }

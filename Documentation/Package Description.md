@@ -1,6 +1,6 @@
-# Build Finish Notifier - Package Description
+# Build Tools - Package Description
 
-Package `com.fixer33.build-finish-notifier` 1.0.0, display name "Build Finish Notifier", Unity 6000.0+. Git URL: `https://github.com/Fixer33/BuildFinishNotifierPackage.git`.
+Package `com.fixer33.build-tools` 2.0.0, display name "Build Tools", Unity 6000.0+. Git URL: `https://github.com/Fixer33/BuildToolsPackage.git`.
 
 ## 1. Purpose and users
 
@@ -8,16 +8,16 @@ An editor-only tool that sends a notification when a Unity player build finishes
 
 ## 2. Architecture and main components
 
-All code lives under `Editor/` in one editor-only assembly `com.fixer33.build-finish-notifier.Editor` (root namespace `BuildFinishNotifier.Editor`).
+All code lives under `Editor/` in one editor-only assembly `com.fixer33.build-tools.Editor` (root namespace `Fixer33.BuildTools.Editor`).
 
 | Component | File | Role |
 |---|---|---|
-| `BuildFinishNotifier` (internal class, `IPostprocessBuildWithReport`, `callbackOrder` 0) | `Editor/BuildFinishNotifier.cs` | Trigger. `OnPostprocessBuild` creates all notifiers and calls `NotifyAsync` on each with `report.summary.result`. Exceptions per notifier are caught and logged. |
-| `IBuildFinishNotifier` | `Editor/Abstract/IBuildFinishNotifier.cs` | Notifier contract: `NotifyAsync(BuildResult)`, `LoadConfig(string, Action<string>)`, `CreateWindowElement(VisualElement)`, plus `IDisposable` with a default `Dispose` that does nothing (contains a `TODO: Implement dispose pattern`). |
-| `BuildFinishNotifierBase` / `BuildFinishNotifierBase<T>` | `Editor/Abstract/BuildFinishNotifierBase.cs` | Convenience base classes. The generic one keeps a config of type `T` (`T : new()`), serialised with `JsonUtility`, and exposes `Config` (ref), `SaveConfig()`, `GetFormattedText(string)` and the abstract `WriteDefaultConfig(ref T)`. |
-| `BuildFinishNotifierWindow` (internal `EditorWindow`) | `Editor/GUI/BuildFinishNotifierWindow.cs` | UI Toolkit settings window. Builds one framed block per notifier (title = notifier type name) and lets each notifier fill its own controls. Style sheet: `Editor/GUI/Styles/BuildFinishNotifierWindow.uss`. |
-| `TelegramFinishNotifier`, `TelegramConfig` (both internal) | `Editor/Notifiers/TelegramFinishNotifier.cs` | The only notifier. Sends a message through the bundled `Telegram.Bot` library. Setup guide: `Documentation/TelegramNotifier.md`. |
-| `Telegram.Bot.dll` (+ `.pdb`, `.xml`) | `Editor/Libraries/Telegram/` | Bundled third-party library, enabled for the Editor platform only (read from the `.meta` importer settings). Version not stated in the files read. |
+| `BuildFinishNotifier` (internal class, `IPostprocessBuildWithReport`, `callbackOrder` 0) | `Editor/Notifier/BuildFinishNotifier.cs` | Trigger. `OnPostprocessBuild` creates all notifiers and calls `NotifyAsync` on each with `report.summary.result`. Exceptions per notifier are caught and logged. |
+| `IBuildFinishNotifier` | `Editor/Notifier/Abstract/IBuildFinishNotifier.cs` | Notifier contract: `NotifyAsync(BuildResult)`, `LoadConfig(string, Action<string>)`, `CreateWindowElement(VisualElement)`, plus `IDisposable` with a default `Dispose` that does nothing (contains a `TODO: Implement dispose pattern`). |
+| `BuildFinishNotifierBase` / `BuildFinishNotifierBase<T>` | `Editor/Notifier/Abstract/BuildFinishNotifierBase.cs` | Convenience base classes. The generic one keeps a config of type `T` (`T : new()`), serialised with `JsonUtility`, and exposes `Config` (ref), `SaveConfig()`, `GetFormattedText(string)` and the abstract `WriteDefaultConfig(ref T)`. |
+| `BuildFinishNotifierWindow` (internal `EditorWindow`) | `Editor/Notifier/GUI/BuildFinishNotifierWindow.cs` | UI Toolkit settings window. Builds one framed block per notifier (title = notifier type name) and lets each notifier fill its own controls. Style sheet: `Editor/Notifier/GUI/Styles/BuildFinishNotifierWindow.uss`. |
+| `TelegramFinishNotifier`, `TelegramConfig` (both internal) | `Editor/Notifier/Notifiers/TelegramFinishNotifier.cs` | The only notifier. Sends a message through the bundled `Telegram.Bot` library. Setup guide: `Documentation/TelegramNotifier.md`. |
+| `Telegram.Bot.dll` (+ `.pdb`, `.xml`) | `Editor/Notifier/Libraries/Telegram/` | Bundled third-party library, enabled for the Editor platform only (read from the `.meta` importer settings). Version not stated in the files read. |
 
 Flow: build finishes -> `OnPostprocessBuild` -> `CreateAllPossibleNotifiers()` (reflection over all loaded assemblies; every non-abstract type implementing `IBuildFinishNotifier` is instantiated with `Activator.CreateInstance`) -> `LoadConfig` with the stored string -> `NotifyAsync`.
 
@@ -27,7 +27,7 @@ Telegram behaviour: `BuildResult.Succeeded` and `BuildResult.Unknown` use the "c
 
 ## 3. Public API surface and extension points
 
-Public types: `IBuildFinishNotifier`, `BuildFinishNotifierBase`, `BuildFinishNotifierBase<T>` (namespace `BuildFinishNotifier.Editor.Abstract`). Everything else is `internal`.
+Public types: `IBuildFinishNotifier`, `BuildFinishNotifierBase`, `BuildFinishNotifierBase<T>` (namespace `Fixer33.BuildTools.Editor.Notifier.Abstract`). Everything else is `internal`.
 
 Extension point: add a new notifier by writing a class in an editor assembly that references this package's assembly and either implements `IBuildFinishNotifier` or derives from `BuildFinishNotifierBase<TConfig>` (implement `NotifyAsync` and `WriteDefaultConfig`, optionally override `CreateWindowElement`). It needs a parameterless constructor (it is created through `Activator.CreateInstance`). It is discovered automatically; there is no registration. The config type must be `JsonUtility`-serialisable.
 
@@ -42,7 +42,7 @@ There is no runtime API.
 
 ## 5. Editor tools and menu items
 
-- Menu `Tools/Fixer33/Build Finish Notifier` opens the settings window.
+- Menu `Tools/Fixer33/Build Tools/Build Finish Notifier` opens the settings window.
 - On the first editor load after install (`[InitializeOnLoadMethod]`, EditorPrefs key `bfn-first-launch`, per machine) the window opens once automatically.
 - For Telegram the window shows: Bot Token, Chat Id, Completed text message template, Failed build text message template. Each edit is saved immediately.
 
@@ -52,10 +52,24 @@ None: no `Samples~`, no test assemblies. A guide `Documentation/TelegramNotifier
 
 ## 7. How other projects consume it
 
-Install by Git URL in Package Manager (`https://github.com/Fixer33/BuildFinishNotifierPackage.git`), or through the author's `com.fixer33.package-installer` tool (assumed). Then open `Tools > Fixer33 > Build Finish Notifier`, fill in the bot data and run a build. No code is needed.
+Install by Git URL in Package Manager (`https://github.com/Fixer33/BuildToolsPackage.git`), or through the author's `com.fixer33.package-installer` tool (assumed). Then open `Tools > Fixer33 > Build Tools > Build Finish Notifier`, fill in the bot data and run a build. No code is needed.
 
 ## 8. Current state
 
-- Finished and functional for Telegram; version 1.0.0 (CHANGELOG: first version, 2025-03-07).
+- Version 2.0.0: renamed from `com.fixer33.build-finish-notifier`, added per-project switches and the Build Preflight. The notifier is finished and functional for Telegram.
 - Rough edges: `IBuildFinishNotifier.Dispose` is an empty default with a TODO; the bot token is stored in plain text in EditorPrefs and is written into the error log on a failed send (author: no fix planned); `TelegramFinishNotifier.NotifyAsync` is `async void`; notifiers are re-created (config reloaded) at every build; `BuildFinishNotifierWindow.OnDestroy` iterates `_notifiers` without a null check; `LoadConfig` writes defaults only when `JsonUtility.FromJson` throws, while empty text may instead give an all-null config (assumed); typo "Reson" in an error message.
 - Unused: nothing known.
+
+
+## 9. Build Preflight and settings (added in 2.0.0)
+
+| Component | File | Role |
+|---|---|---|
+| `BuildToolsSettings` (`ScriptableSingleton`, public) | `Editor/Settings/BuildToolsSettings.cs` | Per-project switches `NotifierEnabled` (default on), `PreflightEnabled` (default off), `PreflightInBatchMode` (default off); event `Changed`. File: `ProjectSettings/Packages/com.fixer33.build-tools/BuildToolsSettings.asset`. |
+| `BuildToolsSettingsProvider` (internal) | `Editor/Settings/BuildToolsSettingsProvider.cs` | Project Settings page `Fixer33/Build Tools`; menu `Tools/Fixer33/Build Tools/Settings`. |
+| `BuildPreflight` (public static, `[InitializeOnLoad]`) | `Editor/Preflight/BuildPreflight.cs` | Registers the build handler only while enabled (and restores the default one when disabled). `CreateChecks()` finds `IBuildPreflightCheck` types through `TypeCache`; `RunSafe()` turns exceptions into failures. Batch mode: runs checks only when `PreflightInBatchMode`, throwing `BuildMethodException` on failure. |
+| `IBuildPreflightCheck`, `PreflightCheckResult`, `PreflightCheckStatus` | `Editor/Preflight/IBuildPreflightCheck.cs` | Extension point for game-specific automatic checks. |
+| `BuildChecklistData` (`ScriptableObject`) | `Editor/Preflight/BuildChecklistData.cs` | Manual checklist. Same script GUID as the copy CrimeGame and CoopHorror had, so their assets keep working after the switch. Found with `AssetDatabase.FindAssets`. |
+| `BuildPreflightWindow` | `Editor/Preflight/BuildPreflightWindow.cs` | Utility window shown before a build. |
+
+Tests: `Tests/Editor` (assembly `com.fixer33.build-tools.Editor.Tests`) cover check discovery, ordering and exception handling.

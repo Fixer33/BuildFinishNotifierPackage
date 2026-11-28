@@ -1,11 +1,10 @@
 {
-  "name": "com.fixer33.build-finish-notifier",
-  "version": "1.0.1",
-  "displayName": "Build Finish Notifier",
-  "description": "Notifies you when your build is finished",
+  "name": "com.fixer33.build-tools",
+  "version": "2.0.0",
+  "displayName": "Build Tools",
+  "description": "Editor build helpers: a notification when a build finishes (Telegram and custom channels) and an optional build preflight (automatic checks + manual checklist). Each can be switched off per project.",
   "unity": "6000.0",
-  "dependencies": {
-  },
+  "dependencies": {},
   "author": {
     "name": "Fixer33",
     "email": "fsfixer33@gmail.com",

@@ -1,7 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using BuildFinishNotifier.Editor.Abstract;
+using Fixer33.BuildTools.Editor.Notifier.Abstract;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -9,7 +9,7 @@ using UnityEditor.Build.Reporting;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace BuildFinishNotifier.Editor.Notifiers
+namespace Fixer33.BuildTools.Editor.Notifier.Notifiers
 {
     internal class TelegramFinishNotifier : BuildFinishNotifierBase<TelegramConfig>
     {

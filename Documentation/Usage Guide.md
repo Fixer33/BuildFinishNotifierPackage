@@ -1,6 +1,6 @@
-# Build Finish Notifier - Usage Guide
+# Build Tools - Usage Guide
 
-Package `com.fixer33.build-finish-notifier` 1.0.0 (Unity 6000.0+). Editor-only tool that sends a notification when a Unity player build finishes. The only shipped channel is Telegram. There is no runtime API.
+Package `com.fixer33.build-tools` 2.0.0 (Unity 6000.0+). Editor-only build helpers: the **Build Finish Notifier** (a message when a player build finishes; Telegram built in) and the **Build Preflight** (checks and a checklist before a build). Each is switched on or off per project. There is no runtime API. Formerly `com.fixer33.build-finish-notifier`.
 
 Items marked **(assumed)** were inferred from the code rather than read directly or tested.
 
@@ -8,16 +8,16 @@ Items marked **(assumed)** were inferred from the code rather than read directly
 
 **Option A - package installer.** Install `com.fixer33.package-installer` (see section 8), open `Tools > Fixer33 > Package Installer`, find "Build Finish Notifier" in its list and install it. Its `packages-list.json` entry is:
 
-- PackageId: `com.fixer33.build-finish-notifier`
-- PackageUrl: `https://github.com/Fixer33/BuildFinishNotifierPackage.git`
+- PackageId: `com.fixer33.build-tools`
+- PackageUrl: `https://github.com/Fixer33/BuildToolsPackage.git`
 
-**Option B - Git URL.** `Window > Package Manager`, press `+`, choose "Install package from git URL...", paste `https://github.com/Fixer33/BuildFinishNotifierPackage.git`, press "Install".
+**Option B - Git URL.** `Window > Package Manager`, press `+`, choose "Install package from git URL...", paste `https://github.com/Fixer33/BuildToolsPackage.git`, press "Install".
 
 `package.json` declares no dependencies. The Telegram client library (`Telegram.Bot.dll`) is bundled in the package and enabled for the Editor only.
 
 ## 2. Minimal setup (Telegram)
 
-1. After the first install, the settings window opens by itself once per machine. Otherwise open it via `Tools > Fixer33 > Build Finish Notifier`.
+1. After the first install, the settings window opens by itself once per machine. Otherwise open it via `Tools > Fixer33 > Build Tools > Build Finish Notifier`.
 2. Create a bot with @BotFather in Telegram and copy its token. Do not share it.
 3. Message the bot (or add it to a chat and write 1-2 messages), then open `https://api.telegram.org/bot<token>/getUpdates` in a browser and read the `id` of the chat from the JSON response.
 4. In the window, under `TelegramFinishNotifier`, fill in "Bot Token" and "Chat Id".
@@ -47,20 +47,20 @@ The token `{project}` is replaced with `Application.productName`. Messages are s
 
 | Path | What it does |
 |---|---|
-| `Tools/Fixer33/Build Finish Notifier` | Opens `BuildFinishNotifierWindow` (internal `EditorWindow`, UI Toolkit). |
+| `Tools/Fixer33/Build Tools/Build Finish Notifier` | Opens `BuildFinishNotifierWindow` (internal `EditorWindow`, UI Toolkit). |
 | automatic | `[InitializeOnLoadMethod]` opens the window once, the first time the editor loads after install, guarded by EditorPrefs key `bfn-first-launch`. |
 
 ## 5. Configuration and scripting defines
 
 - **Storage:** each notifier's config is stored as JSON in `EditorPrefs` under the key `bfn-notifier-<ClassName>-data` (for Telegram: `bfn-notifier-TelegramFinishNotifier-data`). EditorPrefs are per machine and per user: they are not part of the project and are not shared through version control. Team members and build machines must each configure their own.
-- **Define `PACKAGES_DEV`:** only for developing the package itself. When defined, the window loads its style sheet from `Assets/Packages/com.fixer33.build-finish-notifier/...` instead of `Packages/com.fixer33.build-finish-notifier/...`. Normal users do not need it.
-- The assembly `com.fixer33.build-finish-notifier.Editor` has no `versionDefines` or `defineConstraints`, and no assembly references.
+- **Define `PACKAGES_DEV`:** only for developing the package itself. When defined, the window loads its style sheet from `Assets/Packages/com.fixer33.build-tools/...` instead of `Packages/com.fixer33.build-tools/...`. Normal users do not need it.
+- The assembly `com.fixer33.build-tools.Editor` has no `versionDefines` or `defineConstraints`, and no assembly references.
 
 ## 6. How it works and extension points
 
 Flow: the build finishes, `BuildFinishNotifier.OnPostprocessBuild` (an `IPostprocessBuildWithReport`, `callbackOrder` 0) runs, `CreateAllPossibleNotifiers()` scans all loaded assemblies for non-abstract types implementing `IBuildFinishNotifier`, creates each with `Activator.CreateInstance`, calls `LoadConfig` with the stored string, then `NotifyAsync(report.summary.result)` is called on each. An exception thrown by one notifier is caught and logged with `Debug.LogError`; other notifiers still run. The notifiers are created again for every build, and again each time the window is created.
 
-Public types (namespace `BuildFinishNotifier.Editor.Abstract`):
+Public types (namespace `Fixer33.BuildTools.Editor.Notifier.Abstract`):
 
 - `IBuildFinishNotifier : IDisposable` - members `NotifyAsync(BuildResult)`, `LoadConfig(string rawData, Action<string> onConfigUpdate)`, `CreateWindowElement(VisualElement root)`. `Dispose` has an empty default implementation.
 - `BuildFinishNotifierBase` - abstract `NotifyAsync` and `LoadConfig`, virtual empty `CreateWindowElement`.
@@ -70,11 +70,11 @@ There is no registration step: a new notifier is found automatically.
 
 ### Worked example: a notifier that writes to the Console
 
-Put this in an editor assembly (or in an `Editor` folder, which uses `Assembly-CSharp-Editor`). If you use your own asmdef, add `com.fixer33.build-finish-notifier.Editor` to its references and restrict it to the Editor platform.
+Put this in an editor assembly (or in an `Editor` folder, which uses `Assembly-CSharp-Editor`). If you use your own asmdef, add `com.fixer33.build-tools.Editor` to its references and restrict it to the Editor platform.
 
 ```csharp
 using System;
-using BuildFinishNotifier.Editor.Abstract;
+using Fixer33.BuildTools.Editor.Notifier.Abstract;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -156,3 +156,49 @@ These are still open and affect usage:
 - **Per-machine settings (EditorPrefs):** whether this is intentional is open (question 9).
 
 The token handling (plain-text storage and token in the error log) is answered: no fix is planned, and the behaviour described in section 7 is current.
+
+
+## Project settings (on/off switches)
+
+`Project Settings > Fixer33 > Build Tools` (or `Tools > Fixer33 > Build Tools > Settings`). Stored in `ProjectSettings/Packages/com.fixer33.build-tools/BuildToolsSettings.asset`, so they are shared through version control.
+
+| Setting | Default | Effect |
+|---|---|---|
+| Build Finish Notifier > Enabled | on | Off: no notification is sent and the notifier window does not open on first install. Channel settings (EditorPrefs, per machine) are kept. |
+| Build Preflight > Enabled | off | On: every build started from the Build Profiles window / build menu shows the preflight window first. |
+| Run checks in batch mode | off | On: CI / command-line builds run the automatic checks and stop when one fails (no window). Off: batch builds skip the preflight. |
+| Checklist asset | — | Shows the project's `BuildChecklistData`; "Create" makes one at `Assets/Editor/BuildPreflight/BuildChecklistData.asset`. |
+
+Code can read or change them through `Fixer33.BuildTools.Editor.Settings.BuildToolsSettings.instance` (`NotifierEnabled`, `PreflightEnabled`, `PreflightInBatchMode`, event `Changed`).
+
+## Build Preflight
+
+Turn it on in the settings above. When a build starts, the window lists:
+
+1. **Automatic checks**: every class in any editor assembly that implements `IBuildPreflightCheck` (namespace `Fixer33.BuildTools.Editor.Preflight`) and has a parameterless constructor. Found automatically; no registration. A `Failed` result blocks "Continue to Build"; `Warning` is only shown. "Re-run checks" runs them again after you fix something.
+2. **Manual checklist**: the items of the project's `BuildChecklistData` asset (Create > Fixer33 > Build Checklist). Every item must be ticked.
+
+"Continue to Build" starts the build with the original options; "Cancel" or closing the window cancels it. While the preflight is disabled the package registers no build handler, so other tools' handlers keep working. Only one build handler can be active in Unity at a time: if another tool also calls `BuildPlayerWindow.RegisterBuildPlayerHandler`, the one registered last wins.
+
+Project-specific rules belong in the game, as checks:
+
+```csharp
+using Fixer33.BuildTools.Editor.Preflight;
+using UnityEditor;
+
+// In an Editor folder or an editor-only asmdef that references com.fixer33.build-tools.Editor
+public class DevelopmentBuildCheck : IBuildPreflightCheck
+{
+    public string Title => "Development build flag";
+    public int Order => 0;
+
+    public PreflightCheckResult Run(BuildPlayerOptions options) =>
+        (options.options & BuildOptions.Development) != 0
+            ? PreflightCheckResult.Warn("This is a development build.")
+            : PreflightCheckResult.Pass();
+}
+```
+
+### Moving a game's own preflight to the package
+
+Games that had `Assets/Editor/BuildPreflight/` (CrimeGame, CoopHorror): the package's `BuildChecklistData` script keeps the same GUID, so the existing checklist asset keeps its items. Delete the game's three preflight scripts (keep the `.asset`), then enable the preflight in the settings.

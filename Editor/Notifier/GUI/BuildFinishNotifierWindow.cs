@@ -1,14 +1,14 @@
 using System;
-using BuildFinishNotifier.Editor.Abstract;
+using Fixer33.BuildTools.Editor.Notifier.Abstract;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace BuildFinishNotifier.Editor.GUI
+namespace Fixer33.BuildTools.Editor.Notifier.GUI
 {
     internal class BuildFinishNotifierWindow : EditorWindow
     {
-        [MenuItem("Tools/Fixer33/Build Finish Notifier")]
+        [MenuItem("Tools/Fixer33/Build Tools/Build Finish Notifier")]
         public static void ShowWindow()
         {
             var window = GetWindow<BuildFinishNotifierWindow>();
@@ -23,7 +23,7 @@ namespace BuildFinishNotifier.Editor.GUI
         {
             GC.Collect();
             
-            string loadPath = "Packages/com.fixer33.build-finish-notifier/Editor/GUI/Styles/BuildFinishNotifierWindow.uss";
+            string loadPath = "Packages/com.fixer33.build-tools/Editor/Notifier/GUI/Styles/BuildFinishNotifierWindow.uss";
 #if PACKAGES_DEV
             loadPath = "Assets/" + loadPath;            
 #endif
