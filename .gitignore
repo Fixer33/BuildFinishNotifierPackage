@@ -1,0 +1,26 @@
+# UPM package repository .gitignore (Fixer33 standard)
+# The repo root is the package root (package.json at the top).
+# Keep every .meta file: Unity needs them when the package is installed by Git URL.
+
+# IDE
+.idea/
+.vs/
+.vscode/
+*.csproj
+*.sln
+*.user
+*.suo
+*.DotSettings
+*.DotSettings.user
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Build and test leftovers
+obj/
+bin/
+*.log
+*.tmp
+*.unitypackage
